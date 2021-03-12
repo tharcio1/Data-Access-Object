@@ -24,10 +24,21 @@
 
 	//echo $usuario;
 
-	$aluno = new Usuario("aluno2", "@lun0");
+	/*
+	//Criando um novo usuario
+	$aluno = new Usuario("aluno", "@lun0");
 
 	$aluno->insert();
 
 	echo $aluno;
+	*/
+
+	$usuario = new Usuario();
+
+	$usuario->loadById(8);
+
+	$usuario->update("professor", "!@#$%¨&");
+
+	echo $usuario;
 
  ?>
