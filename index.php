@@ -37,7 +37,7 @@
 
 	$usuario->loadById(8);
 
-	$usuario->update("professor", "!@#$%¨&");
+	$usuario->update("professorMaster", "!@#$%¨&A");
 
 	echo $usuario;
 

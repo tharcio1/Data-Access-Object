@@ -113,12 +113,9 @@
 		}//fim metodo setData
 
 		public function insert(){
-
 			$sql = new Sql();
 
-			$userExists = $this->searchExactly($this->getDeslogin());
-
-			if(count($userExists) > 0) {
+			if($this->verifyLogin($this->getDeslogin())) {
 				throw new Exception("Usuário já existente!");
 			}else{
 				$results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array(
@@ -135,25 +132,39 @@
 
 		public function update($login, $password){
 
-			$this->setDeslogin($login);
-			$this->setDessenha($password);
+			if($this->verifyLogin($login) and $login != $this->getDeslogin()) {
+				throw new Exception("Usuário já existente!");
+			}else{
+				$this->setDeslogin($login);
+				$this->setDessenha($password);
 
+				$sql = new Sql();
+
+				$sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", array(
+					':LOGIN'=>$this->getDeslogin(),
+					':PASSWORD'=>$this->getDessenha(),
+					':ID'=>$this->getIdusuario()
+				));
+			}//fim else
+
+		}//fim function update
+
+		public function verifyLogin($login){
 			$sql = new Sql();
 
-			$sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", array(
-				':LOGIN'=>$this->getDeslogin(),
-				':PASSWORD'=>$this->getDessenha(),
-				':ID'=>$this->getIdusuario()
-			));
+			$userExists = $this->searchExactly($login);
 
-		}
+			if(count($userExists) > 0) {
+				return true;
+			}//fim if
+		}//fim function verifyLogin
 
 		public function __construct($login = "", $password = ""){
 
 			$this->setDeslogin($login);
 			$this->setDessenha($password);
 
-		}
+		}//fim function __construct
 
 		public function __toString(){
 			return json_encode(array(
@@ -162,7 +173,7 @@
 				"dessenha" => $this->getDessenha(),
 				"dtcadastro" => $this->getDtcadastro(),
 			));
-		}//fim metodo toString
+		}//fim function __toString
 
 	}// fim classe Usuario
 
