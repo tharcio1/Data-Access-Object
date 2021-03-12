@@ -19,9 +19,15 @@
 	//echo json_encode($search);
 
 	//carrrega um usuario usando o login e a senha
-	$usuario = new Usuario();
-	$usuario->login("tharcio2", "noixenoix");
+	//$usuario = new Usuario();
+	//$usuario->login("tharcio2", "noixenoix");
 
-	echo $usuario;
+	//echo $usuario;
+
+	$aluno = new Usuario("aluno2", "@lun0");
+
+	$aluno->insert();
+
+	echo $aluno;
 
  ?>

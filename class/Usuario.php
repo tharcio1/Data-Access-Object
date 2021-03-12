@@ -50,12 +50,7 @@
 
 			if(count($results) > 0){
 
-				$row = $results[0];
-
-				$this->setIdusuario($row['idusuario']);
-				$this->setDeslogin($row['deslogin']);
-				$this->setDessenha($row['dessenha']);
-				$this->setDtcadastro($row['dtcadastro']);
+				$this->setData($results[0]);
 
 			}//fim if
 
@@ -77,6 +72,14 @@
 
 		}// fim function search
 
+		public static function searchExactly($login){
+			$sql = new Sql();
+
+			return $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :SEARCH ORDER BY deslogin", array(
+				":SEARCH"=>$login
+			));
+		}// fim function searchExactly
+
 		public function login($login, $password){
 
 			$Sql = new Sql();
@@ -88,12 +91,7 @@
 
 			if(count($results) > 0){
 
-				$row = $results[0];
-
-				$this->setIdusuario($row['idusuario']);
-				$this->setDeslogin($row['deslogin']);
-				$this->setDessenha($row['dessenha']);
-				$this->setDtcadastro($row['dtcadastro']);
+				$this->setData($results[0]);
 
 			}else{
 
@@ -104,6 +102,43 @@
 
 		}//fim function login
 
+
+		public function setData($data){
+
+			$this->setIdusuario($data['idusuario']);
+			$this->setDeslogin($data['deslogin']);
+			$this->setDessenha($data['dessenha']);
+			$this->setDtcadastro($data['dtcadastro']);
+
+		}//fim metodo setData
+
+		public function insert(){
+
+			$sql = new Sql();
+
+			$userExists = $this->searchExactly($this->getDeslogin());
+
+			if(count($userExists) > 0) {
+				throw new Exception("Usuário já existente!");
+			}else{
+				$results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array(
+					':LOGIN'=>$this->getDeslogin(),
+					':PASSWORD'=>$this->getDessenha()
+				));//sp = storage procedure
+
+				if(count($results) > 0) {
+					$this->setData($results[0]);
+				}//fim if
+			}//fim else
+
+		}//fim metodo insert
+
+		public function __construct($login = "", $password = ""){
+
+			$this->setDeslogin($login);
+			$this->setDessenha($password);
+
+		}
 
 		public function __toString(){
 			return json_encode(array(
